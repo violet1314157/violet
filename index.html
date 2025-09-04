@@ -59,7 +59,7 @@
     /* 拖拽上传区域样式 */
     .drop-area {
       border: 2px dashed rgba(147, 51, 234, 0.5);
-      transition: all 0.3s ease;
+      transition: all 0.3 ease;
     }
     
     .drop-area.active {
@@ -69,7 +69,7 @@
     
     /* 作品卡片动画 */
     .portfolio-item {
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      transition: transform 0.4 ease, box-shadow 0.4 ease;
     }
     
     .portfolio-item:hover {
@@ -79,18 +79,36 @@
     
     /* 导航栏滚动效果 */
     .navbar {
-      transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+      transition: background-color 0.3 ease, padding 0.3 ease, box-shadow 0.3 ease;
     }
     
     /* 加载动画 */
     .loader {
       border-top-color: #9333ea;
-      animation: spinner 0.8s linear infinite;
+      animation: spinner 0.8 linear infinite;
     }
     
     @keyframes spinner {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    
+    /* 模态框动画 */
+    .modal-enter {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    
+    .modal-enter-active {
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity 300ms, transform 300ms;
+    }
+    
+    /* 表单输入聚焦效果 */
+    .form-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.3);
     }
   </style>
 </head>
@@ -300,48 +318,6 @@
             了解更多 <i class="fa fa-arrow-right ml-2"></i>
           </a>
         </div>
-        
-        <!-- 服务卡片4 -->
-        <div class="bg-light p-8 rounded-lg shadow-md hover-lift">
-          <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center text-2xl mb-6">
-            <i class="fa fa-bullhorn"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-4">营销素材</h3>
-          <p class="text-gray-600 mb-6">
-            设计引人注目的营销材料，包括海报、传单、社交媒体图像等，提升品牌曝光度。
-          </p>
-          <a href="#contact" class="text-primary font-medium flex items-center hover:text-dark transition-custom">
-            了解更多 <i class="fa fa-arrow-right ml-2"></i>
-          </a>
-        </div>
-        
-        <!-- 服务卡片5 -->
-        <div class="bg-light p-8 rounded-lg shadow-md hover-lift">
-          <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center text-2xl mb-6">
-            <i class="fa fa-code"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-4">网站开发</h3>
-          <p class="text-gray-600 mb-6">
-            将设计转化为功能完善的网站，确保视觉一致性和出色的用户体验。
-          </p>
-          <a href="#contact" class="text-primary font-medium flex items-center hover:text-dark transition-custom">
-            了解更多 <i class="fa fa-arrow-right ml-2"></i>
-          </a>
-        </div>
-        
-        <!-- 服务卡片6 -->
-        <div class="bg-light p-8 rounded-lg shadow-md hover-lift">
-          <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center text-2xl mb-6">
-            <i class="fa fa-video-camera"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-4">视频制作</h3>
-          <p class="text-gray-600 mb-6">
-            创作高质量的视频内容，包括宣传片、产品演示和社交媒体短视频。
-          </p>
-          <a href="#contact" class="text-primary font-medium flex items-center hover:text-dark transition-custom">
-            了解更多 <i class="fa fa-arrow-right ml-2"></i>
-          </a>
-        </div>
       </div>
     </div>
   </section>
@@ -350,10 +326,10 @@
   <section id="portfolio" class="py-20 bg-gradient-to-b from-light to-white">
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
-        <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-primary mb-4">作品集</h2>
+        <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-primary mb-4">我的作品集</h2>
         <div class="w-20 h-1 bg-tertiary mx-auto mb-6"></div>
         <p class="text-gray-600 max-w-2xl mx-auto">
-          浏览我们的精选作品，每一个项目都体现了我们的创意理念和专业水准
+          上传并管理您的创意作品，所有作品将被安全保存
         </p>
       </div>
       
@@ -380,163 +356,60 @@
       <div id="drop-area" class="drop-area mb-12 p-10 rounded-lg text-center">
         <i class="fa fa-cloud-upload text-5xl text-primary mb-4"></i>
         <h3 class="text-xl font-bold mb-2">拖拽图片到此处上传作品</h3>
-        <p class="text-gray-600 mb-6">支持JPG、PNG格式，最大5MB</p>
+        <p class="text-gray-600 mb-6">支持JPG、PNG、GIF、WebP格式，最大10MB</p>
         <label class="inline-block bg-primary hover:bg-dark text-white px-6 py-3 rounded-full font-medium transition-custom cursor-pointer">
           <i class="fa fa-plus mr-2"></i>选择图片文件
           <input type="file" id="file-input" accept="image/*" multiple class="hidden">
         </label>
       </div>
       
+      <!-- 作品信息编辑模态框 -->
+      <div id="edit-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-lg w-full">
+          <div class="p-6">
+            <h3 class="text-2xl font-bold mb-4 text-primary">编辑作品信息</h3>
+            <form id="edit-form">
+              <input type="hidden" id="edit-work-id">
+              
+              <div class="mb-4">
+                <label for="edit-title" class="block text-gray-700 mb-2 font-medium">作品名称</label>
+                <input type="text" id="edit-title" class="w-full px-4 py-2 border border-gray-300 rounded-lg form-input" placeholder="请输入作品名称">
+              </div>
+              
+              <div class="mb-4">
+                <label for="edit-category" class="block text-gray-700 mb-2 font-medium">作品类别</label>
+                <select id="edit-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg form-input">
+                  <option value="branding">品牌设计</option>
+                  <option value="ui">UI/UX设计</option>
+                  <option value="photography">摄影</option>
+                  <option value="marketing">营销素材</option>
+                </select>
+              </div>
+              
+              <div class="mb-6">
+                <label for="edit-description" class="block text-gray-700 mb-2 font-medium">作品描述</label>
+                <textarea id="edit-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg form-input" placeholder="请输入作品描述..."></textarea>
+              </div>
+              
+              <div class="flex justify-end gap-4">
+                <button type="button" id="cancel-edit" class="px-6 py-2 border border-gray-300 rounded-full font-medium hover:bg-gray-100 transition-custom">
+                  取消
+                </button>
+                <button type="submit" class="bg-primary hover:bg-dark text-white px-6 py-2 rounded-full font-medium transition-custom">
+                  保存作品
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
       <!-- 作品集网格 -->
       <div id="portfolio-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- 示例作品1 -->
-        <div class="portfolio-item rounded-lg overflow-hidden shadow-md bg-white" data-category="branding">
-          <div class="relative group">
-            <img src="https://picsum.photos/id/26/800/600" alt="品牌设计作品" class="w-full h-64 object-cover">
-            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="https://picsum.photos/id/26/800/600" data-title="自然有机品牌设计" data-desc="为有机食品品牌设计的全套视觉识别系统">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">自然有机品牌设计</h3>
-            <p class="text-gray-600 text-sm mb-3">品牌设计</p>
-            <div class="flex justify-between items-center">
-              <span class="text-primary text-sm">2023年</span>
-              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                <i class="fa fa-external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 示例作品2 -->
-        <div class="portfolio-item rounded-lg overflow-hidden shadow-md bg-white" data-category="ui">
-          <div class="relative group">
-            <img src="https://picsum.photos/id/3/800/600" alt="移动应用UI设计" class="w-full h-64 object-cover">
-            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="https://picsum.photos/id/3/800/600" data-title="健康追踪应用UI" data-desc="为健康管理应用设计的用户界面，注重用户体验和数据可视化">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">健康追踪应用UI</h3>
-            <p class="text-gray-600 text-sm mb-3">UI/UX设计</p>
-            <div class="flex justify-between items-center">
-              <span class="text-primary text-sm">2023年</span>
-              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                <i class="fa fa-external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 示例作品3 -->
-        <div class="portfolio-item rounded-lg overflow-hidden shadow-md bg-white" data-category="photography">
-          <div class="relative group">
-            <img src="https://picsum.photos/id/96/800/600" alt="产品摄影作品" class="w-full h-64 object-cover">
-            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="https://picsum.photos/id/96/800/600" data-title="高端珠宝摄影" data-desc="为奢侈珠宝品牌拍摄的产品系列照片，突出产品细节和质感">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">高端珠宝摄影</h3>
-            <p class="text-gray-600 text-sm mb-3">摄影</p>
-            <div class="flex justify-between items-center">
-              <span class="text-primary text-sm">2022年</span>
-              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                <i class="fa fa-external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 示例作品4 -->
-        <div class="portfolio-item rounded-lg overflow-hidden shadow-md bg-white" data-category="marketing">
-          <div class="relative group">
-            <img src="https://picsum.photos/id/24/800/600" alt="营销海报设计" class="w-full h-64 object-cover">
-            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="https://picsum.photos/id/24/800/600" data-title="夏季促销海报" data-desc="为时尚品牌夏季促销活动设计的系列海报和社交媒体素材">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">夏季促销海报</h3>
-            <p class="text-gray-600 text-sm mb-3">营销素材</p>
-            <div class="flex justify-between items-center">
-              <span class="text-primary text-sm">2022年</span>
-              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                <i class="fa fa-external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 示例作品5 -->
-        <div class="portfolio-item rounded-lg overflow-hidden shadow-md bg-white" data-category="branding">
-          <div class="relative group">
-            <img src="https://picsum.photos/id/60/800/600" alt="咖啡店品牌设计" class="w-full h-64 object-cover">
-            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="https://picsum.photos/id/60/800/600" data-title="精品咖啡店品牌" data-desc="为独立咖啡店设计的品牌标识、包装和店内视觉系统">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">精品咖啡店品牌</h3>
-            <p class="text-gray-600 text-sm mb-3">品牌设计</p>
-            <div class="flex justify-between items-center">
-              <span class="text-primary text-sm">2021年</span>
-              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                <i class="fa fa-external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 示例作品6 -->
-        <div class="portfolio-item rounded-lg overflow-hidden shadow-md bg-white" data-category="ui">
-          <div class="relative group">
-            <img src="https://picsum.photos/id/180/800/600" alt="电子商务网站设计" class="w-full h-64 object-cover">
-            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="https://picsum.photos/id/180/800/600" data-title="时尚电商平台" data-desc="为服装品牌设计的响应式电子商务网站，注重用户体验和转化率">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">时尚电商平台</h3>
-            <p class="text-gray-600 text-sm mb-3">UI/UX设计</p>
-            <div class="flex justify-between items-center">
-              <span class="text-primary text-sm">2021年</span>
-              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                <i class="fa fa-external-link"></i>
-              </a>
-            </div>
-          </div>
+        <!-- 作品将通过JavaScript动态加载 -->
+        <div id="no-works-message" class="col-span-full text-center py-16 hidden">
+          <i class="fa fa-picture-o text-5xl text-gray-300 mb-4"></i>
+          <p class="text-gray-500">您还没有上传任何作品，点击上方上传区域添加您的第一个作品吧！</p>
         </div>
       </div>
     </div>
@@ -586,16 +459,6 @@
                 <div>
                   <h4 class="font-bold mb-1">邮箱</h4>
                   <p class="text-gray-600">2806699796@qq.com</p>
-                </div>
-              </div>
-              
-              <div class="flex items-start">
-                <div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                  <i class="fa fa-clock-o"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold mb-1">工作时间</h4>
-                  <p class="text-gray-600">周一至周五: 9:00 - 18:00</p>
                 </div>
               </div>
             </div>
@@ -698,7 +561,6 @@
             <li><a href="#" class="text-gray-300 hover:text-white transition-custom">UI/UX设计</a></li>
             <li><a href="#" class="text-gray-300 hover:text-white transition-custom">创意摄影</a></li>
             <li><a href="#" class="text-gray-300 hover:text-white transition-custom">营销素材</a></li>
-            <li><a href="#" class="text-gray-300 hover:text-white transition-custom">网站开发</a></li>
           </ul>
         </div>
         
@@ -737,7 +599,11 @@
         <img id="modal-image" src="" alt="作品详情" class="w-full h-auto">
       </div>
       <div class="p-6">
-        <h3 id="modal-title" class="text-2xl font-bold mb-2 text-primary"></h3>
+        <div class="flex justify-between items-start mb-4">
+          <h3 id="modal-title" class="text-2xl font-bold text-primary"></h3>
+          <span id="modal-date" class="text-gray-500 text-sm bg-light px-3 py-1 rounded-full"></span>
+        </div>
+        <p id="modal-category" class="text-sm text-gray-500 mb-4"></p>
         <p id="modal-desc" class="text-gray-600"></p>
       </div>
     </div>
@@ -750,6 +616,449 @@
 
   <!-- JavaScript -->
   <script>
+    // 作品数据管理
+    const PortfolioManager = {
+      // 初始化 - 加载本地存储的作品
+      init() {
+        this.loadWorks();
+        this.setupEventListeners();
+      },
+      
+      // 从本地存储加载作品
+      loadWorks() {
+        const works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+        const portfolioGrid = document.getElementById('portfolio-grid');
+        const noWorksMessage = document.getElementById('no-works-message');
+        
+        // 清空网格
+        portfolioGrid.innerHTML = '';
+        portfolioGrid.appendChild(noWorksMessage);
+        
+        // 检查是否有作品
+        if (works.length === 0) {
+          noWorksMessage.classList.remove('hidden');
+          return;
+        }
+        
+        // 隐藏无作品提示
+        noWorksMessage.classList.add('hidden');
+        
+        // 按上传时间排序，最新的在前面
+        works.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // 渲染作品
+        works.forEach(work => {
+          this.addWorkToGrid(work);
+        });
+      },
+      
+      // 保存作品到本地存储
+      saveWork(work) {
+        const works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+        works.push(work);
+        localStorage.setItem('portfolioWorks', JSON.stringify(works));
+        this.loadWorks(); // 重新加载作品列表
+      },
+      
+      // 更新作品信息
+      updateWork(updatedWork) {
+        let works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+        works = works.map(work => work.id === updatedWork.id ? updatedWork : work);
+        localStorage.setItem('portfolioWorks', JSON.stringify(works));
+        this.loadWorks(); // 重新加载作品列表
+      },
+      
+      // 删除作品
+      deleteWork(id) {
+        let works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+        works = works.filter(work => work.id !== id);
+        localStorage.setItem('portfolioWorks', JSON.stringify(works));
+        this.loadWorks(); // 重新加载作品列表
+      },
+      
+      // 添加作品到网格
+      addWorkToGrid(work) {
+        const portfolioGrid = document.getElementById('portfolio-grid');
+        const categoryNames = {
+          'branding': '品牌设计',
+          'ui': 'UI/UX设计',
+          'photography': '摄影',
+          'marketing': '营销素材'
+        };
+        
+        // 格式化日期
+        const date = new Date(work.timestamp);
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+        
+        const workElement = document.createElement('div');
+        workElement.className = 'portfolio-item rounded-lg overflow-hidden shadow-md bg-white transform transition-all duration-300';
+        workElement.setAttribute('data-category', work.category);
+        workElement.setAttribute('data-id', work.id);
+        
+        workElement.innerHTML = `
+          <div class="relative group">
+            <img src="${work.imageUrl}" alt="${work.title}" class="w-full h-64 object-cover">
+            <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
+              <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" 
+                      data-id="${work.id}"
+                      data-img="${work.imageUrl}" 
+                      data-title="${work.title}" 
+                      data-category="${work.category}"
+                      data-date="${formattedDate}"
+                      data-desc="${work.description}">
+                <i class="fa fa-eye"></i>
+              </button>
+              <button class="edit-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" 
+                      data-id="${work.id}">
+                <i class="fa fa-pencil"></i>
+              </button>
+              <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom" 
+                      data-id="${work.id}">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="font-bold text-lg mb-2">${work.title}</h3>
+            <p class="text-gray-600 text-sm mb-3">${categoryNames[work.category]}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary text-sm">${formattedDate}</span>
+              <a href="#" class="text-gray-500 hover:text-primary transition-custom">
+                <i class="fa fa-external-link"></i>
+              </a>
+            </div>
+          </div>
+        `;
+        
+        portfolioGrid.insertBefore(workElement, document.getElementById('no-works-message'));
+        
+        // 绑定事件
+        this.bindWorkEvents(workElement);
+      },
+      
+      // 绑定作品元素的事件
+      bindWorkEvents(workElement) {
+        // 查看作品
+        workElement.querySelector('.view-work').addEventListener('click', (e) => {
+          e.preventDefault();
+          const button = e.currentTarget;
+          
+          const modalImage = document.getElementById('modal-image');
+          const modalTitle = document.getElementById('modal-title');
+          const modalCategory = document.getElementById('modal-category');
+          const modalDate = document.getElementById('modal-date');
+          const modalDesc = document.getElementById('modal-desc');
+          const workModal = document.getElementById('work-modal');
+          
+          const categoryNames = {
+            'branding': '品牌设计',
+            'ui': 'UI/UX设计',
+            'photography': '摄影',
+            'marketing': '营销素材'
+          };
+          
+          modalImage.src = button.getAttribute('data-img');
+          modalImage.alt = button.getAttribute('data-title');
+          modalTitle.textContent = button.getAttribute('data-title');
+          modalCategory.textContent = categoryNames[button.getAttribute('data-category')];
+          modalDate.textContent = button.getAttribute('data-date');
+          modalDesc.textContent = button.getAttribute('data-desc');
+          
+          workModal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        });
+        
+        // 编辑作品
+        workElement.querySelector('.edit-work').addEventListener('click', (e) => {
+          e.preventDefault();
+          const workId = e.currentTarget.getAttribute('data-id');
+          const works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+          const work = works.find(w => w.id === workId);
+          
+          if (work) {
+            document.getElementById('edit-work-id').value = work.id;
+            document.getElementById('edit-title').value = work.title;
+            document.getElementById('edit-category').value = work.category;
+            document.getElementById('edit-description').value = work.description;
+            
+            document.getElementById('edit-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+          }
+        });
+        
+        // 删除作品
+        workElement.querySelector('.delete-work').addEventListener('click', (e) => {
+          e.preventDefault();
+          const workId = e.currentTarget.getAttribute('data-id');
+          
+          if (confirm('确定要删除这个作品吗？此操作无法撤销。')) {
+            this.deleteWork(workId);
+          }
+        });
+      },
+      
+      // 设置事件监听器
+      setupEventListeners() {
+        // 拖拽上传区域事件
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        
+        // 阻止默认拖放行为
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          dropArea.addEventListener(eventName, this.preventDefaults, false);
+        });
+        
+        // 高亮拖放区域
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropArea.addEventListener(eventName, this.highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropArea.addEventListener(eventName, this.unhighlight, false);
+        });
+        
+        // 处理文件拖放
+        dropArea.addEventListener('drop', this.handleDrop.bind(this), false);
+        
+        // 处理文件选择
+        fileInput.addEventListener('change', this.handleFiles.bind(this), false);
+        
+        // 点击上传区域触发文件选择
+        document.querySelector('label[for="file-input"]').addEventListener('click', () => {
+          fileInput.click();
+        });
+        
+        // 编辑表单提交
+        document.getElementById('edit-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          const workId = document.getElementById('edit-work-id').value;
+          const title = document.getElementById('edit-title').value;
+          const category = document.getElementById('edit-category').value;
+          const description = document.getElementById('edit-description').value;
+          
+          if (!title.trim()) {
+            alert('请输入作品名称');
+            return;
+          }
+          
+          // 获取作品并更新
+          const works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+          const workIndex = works.findIndex(w => w.id === workId);
+          
+          if (workIndex !== -1) {
+            works[workIndex] = {
+              ...works[workIndex],
+              title,
+              category,
+              description
+            };
+            
+            localStorage.setItem('portfolioWorks', JSON.stringify(works));
+            this.loadWorks();
+            
+            // 关闭编辑模态框
+            document.getElementById('edit-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+          }
+        });
+        
+        // 取消编辑
+        document.getElementById('cancel-edit').addEventListener('click', () => {
+          document.getElementById('edit-modal').classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        });
+        
+        // 关闭作品查看模态框
+        document.getElementById('close-modal').addEventListener('click', () => {
+          document.getElementById('work-modal').classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        });
+        
+        // 点击模态框外部关闭
+        document.getElementById('work-modal').addEventListener('click', (e) => {
+          if (e.target === document.getElementById('work-modal')) {
+            document.getElementById('work-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+          }
+        });
+        
+        // 作品筛选
+        document.querySelectorAll('.filter-btn').forEach(button => {
+          button.addEventListener('click', () => {
+            // 更新按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+              btn.classList.remove('active', 'bg-primary', 'text-white');
+              btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            button.classList.add('active', 'bg-primary', 'text-white');
+            button.classList.remove('bg-gray-200', 'text-gray-700');
+            
+            const filter = button.getAttribute('data-filter');
+            
+            // 筛选作品
+            document.querySelectorAll('.portfolio-item').forEach(item => {
+              if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                item.style.display = 'block';
+              } else {
+                item.style.display = 'none';
+              }
+            });
+          });
+        });
+      },
+      
+      // 阻止默认行为
+      preventsDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      
+      // 高亮拖放区域
+      highlight() {
+        document.getElementById('drop-area').classList.add('active');
+      },
+      
+      // 取消高亮
+      unhighlight() {
+        document.getElementById('drop-area').classList.remove('active');
+      },
+      
+      // 处理拖放文件
+      handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        this.handleImageFiles(files);
+      },
+      
+      // 处理选择的文件
+      handleFiles() {
+        const files = this.files;
+        PortfolioManager.handleImageFiles(files);
+      },
+      
+      // 处理图片文件
+      handleImageFiles(files) {
+        // 检查文件是否为图片且大小合适
+        const validFiles = Array.from(files).filter(file => {
+          const isValidType = file.type.startsWith('image/');
+          const isUnderSizeLimit = file.size <= 10 * 1024 * 1024; // 10MB
+          
+          if (!isValidType) {
+            alert(`文件 "${file.name}" 不是有效的图片文件`);
+          } else if (!isUnderSizeLimit) {
+            alert(`文件 "${file.name}" 太大，请上传不超过10MB的图片`);
+          }
+          
+          return isValidType && isUnderSizeLimit;
+        });
+        
+        if (validFiles.length === 0) {
+          return;
+        }
+        
+        // 显示加载状态
+        const loading = document.getElementById('loading');
+        loading.classList.remove('hidden');
+        
+        // 处理每个有效文件
+        validFiles.forEach((file, index) => {
+          // 为每个文件添加延迟，避免同时处理过多文件
+          setTimeout(() => {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              // 生成唯一ID
+              const workId = 'work_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+              
+              // 准备作品数据（默认值）
+              const defaultTitle = `新作品 ${new Date().toLocaleString()}`;
+              const defaultCategory = 'branding';
+              const defaultDescription = '请点击编辑按钮添加作品描述';
+              
+              // 显示编辑模态框，预填默认值
+              document.getElementById('edit-work-id').value = workId;
+              document.getElementById('edit-title').value = defaultTitle;
+              document.getElementById('edit-category').value = defaultCategory;
+              document.getElementById('edit-description').value = defaultDescription;
+              
+              // 隐藏加载状态（最后一个文件处理完毕）
+              if (index === validFiles.length - 1) {
+                loading.classList.add('hidden');
+              }
+              
+              // 显示编辑模态框
+              document.getElementById('edit-modal').classList.remove('hidden');
+              document.body.style.overflow = 'hidden';
+              
+              // 保存图片数据到临时变量，等待用户完成编辑
+              window.tempWorkImage = {
+                id: workId,
+                imageUrl: e.target.result,
+                timestamp: new Date().toISOString()
+              };
+            };
+            
+            reader.readAsDataURL(file);
+          }, index * 300); // 每个文件间隔300ms处理
+        });
+      }
+    };
+    
+    // 编辑表单提交时保存图片
+    document.getElementById('edit-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // 检查是否有临时图片数据
+      if (window.tempWorkImage) {
+        const work = {
+          id: window.tempWorkImage.id,
+          imageUrl: window.tempWorkImage.imageUrl,
+          title: document.getElementById('edit-title').value,
+          category: document.getElementById('edit-category').value,
+          description: document.getElementById('edit-description').value,
+          timestamp: window.tempWorkImage.timestamp
+        };
+        
+        // 保存作品
+        PortfolioManager.saveWork(work);
+        
+        // 清除临时图片数据
+        window.tempWorkImage = null;
+      } else {
+        // 如果不是新作品，更新现有作品
+        const workId = document.getElementById('edit-work-id').value;
+        const title = document.getElementById('edit-title').value;
+        const category = document.getElementById('edit-category').value;
+        const description = document.getElementById('edit-description').value;
+        
+        if (!title.trim()) {
+          alert('请输入作品名称');
+          return;
+        }
+        
+        const works = JSON.parse(localStorage.getItem('portfolioWorks')) || [];
+        const workIndex = works.findIndex(w => w.id === workId);
+        
+        if (workIndex !== -1) {
+          works[workIndex] = {
+            ...works[workIndex],
+            title,
+            category,
+            description
+          };
+          
+          localStorage.setItem('portfolioWorks', JSON.stringify(works));
+          PortfolioManager.loadWorks();
+        }
+      }
+      
+      // 关闭编辑模态框
+      document.getElementById('edit-modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    });
+    
     // 导航栏滚动效果
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
@@ -786,244 +1095,22 @@
       });
     });
     
-    // 作品筛选功能
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    
-    filterButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // 更新按钮状态
-        filterButtons.forEach(btn => {
-          btn.classList.remove('active', 'bg-primary', 'text-white');
-          btn.classList.add('bg-gray-200', 'text-gray-700');
-        });
-        
-        button.classList.add('active', 'bg-primary', 'text-white');
-        button.classList.remove('bg-gray-200', 'text-gray-700');
-        
-        const filter = button.getAttribute('data-filter');
-        
-        // 筛选作品
-        portfolioItems.forEach(item => {
-          if (filter === 'all' || item.getAttribute('data-category') === filter) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      });
-    });
-    
-    // 作品查看模态框
-    const workModal = document.getElementById('work-modal');
-    const modalImage = document.getElementById('modal-image');
-    const modalTitle = document.getElementById('modal-title');
-    const modalDesc = document.getElementById('modal-desc');
-    const viewButtons = document.querySelectorAll('.view-work');
-    const closeModal = document.getElementById('close-modal');
-    
-    viewButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const imgSrc = button.getAttribute('data-img');
-        const title = button.getAttribute('data-title');
-        const desc = button.getAttribute('data-desc');
-        
-        modalImage.src = imgSrc;
-        modalImage.alt = title;
-        modalTitle.textContent = title;
-        modalDesc.textContent = desc;
-        
-        workModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // 防止背景滚动
-      });
-    });
-    
-    closeModal.addEventListener('click', () => {
-      workModal.classList.add('hidden');
-      document.body.style.overflow = 'auto'; // 恢复滚动
-    });
-    
-    // 点击模态框外部关闭
-    workModal.addEventListener('click', (e) => {
-      if (e.target === workModal) {
-        workModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-      }
-    });
-    
-    // 删除作品功能
-    const deleteButtons = document.querySelectorAll('.delete-work');
-    
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.stopPropagation(); // 防止触发查看作品
-        const confirmDelete = confirm('确定要删除这个作品吗？');
-        if (confirmDelete) {
-          const portfolioItem = button.closest('.portfolio-item');
-          portfolioItem.classList.add('scale-95', 'opacity-0');
-          setTimeout(() => {
-            portfolioItem.remove();
-          }, 300);
-        }
-      });
-    });
-    
-    // 拖拽上传功能
-    const dropArea = document.getElementById('drop-area');
-    const fileInput = document.getElementById('file-input');
-    const portfolioGrid = document.getElementById('portfolio-grid');
-    
-    // 打开文件选择器
-    document.querySelector('label[for="file-input"]').addEventListener('click', () => {
-      fileInput.click();
-    });
-    
-    // 拖放事件
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropArea.addEventListener(eventName, highlight, false);
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, unhighlight, false);
-    });
-    
-    function highlight() {
-      dropArea.classList.add('active');
-    }
-    
-    function unhighlight() {
-      dropArea.classList.remove('active');
-    }
-    
-    // 处理文件上传
-    dropArea.addEventListener('drop', handleDrop, false);
-    fileInput.addEventListener('change', handleFiles, false);
-    
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      handleImageFiles(files);
-    }
-    
-    function handleFiles() {
-      const files = this.files;
-      handleImageFiles(files);
-    }
-    
-    function handleImageFiles(files) {
-      // 显示加载状态
-      const loading = document.getElementById('loading');
-      loading.classList.remove('hidden');
-      
-      // 模拟加载延迟
-      setTimeout(() => {
-        [].forEach.call(files, file => {
-          if (!file.type.match('image.*')) {
-            alert('请上传图片文件');
-            return;
-          }
-          
-          const reader = new FileReader();
-          
-          reader.onload = function(e) {
-            // 创建新作品项
-            const categories = ['branding', 'ui', 'photography', 'marketing'];
-            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-            const categoryNames = {
-              'branding': '品牌设计',
-              'ui': 'UI/UX设计',
-              'photography': '摄影',
-              'marketing': '营销素材'
-            };
-            
-            const newItem = document.createElement('div');
-            newItem.className = 'portfolio-item rounded-lg overflow-hidden shadow-md bg-white scale-95 opacity-0 transform transition-all duration-300';
-            newItem.setAttribute('data-category', randomCategory);
-            
-            newItem.innerHTML = `
-              <div class="relative group">
-                <img src="${e.target.result}" alt="新上传作品" class="w-full h-64 object-cover">
-                <div class="absolute inset-0 bg-primary/70 opacity-0 group-hover:opacity-100 transition-custom flex items-center justify-center">
-                  <button class="view-work bg-white text-primary rounded-full p-3 mr-2 hover:bg-light transition-custom" data-img="${e.target.result}" data-title="新上传作品" data-desc="通过拖拽上传的作品">
-                    <i class="fa fa-eye"></i>
-                  </button>
-                  <button class="delete-work bg-white text-red-500 rounded-full p-3 hover:bg-light transition-custom">
-                    <i class="fa fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="p-6">
-                <h3 class="font-bold text-lg mb-2">新上传作品</h3>
-                <p class="text-gray-600 text-sm mb-3">${categoryNames[randomCategory]}</p>
-                <div class="flex justify-between items-center">
-                  <span class="text-primary text-sm">${new Date().getFullYear()}年</span>
-                  <a href="#" class="text-gray-500 hover:text-primary transition-custom">
-                    <i class="fa fa-external-link"></i>
-                  </a>
-                </div>
-              </div>
-            `;
-            
-            // 添加到网格
-            portfolioGrid.prepend(newItem);
-            
-            // 触发动画
-            setTimeout(() => {
-              newItem.classList.remove('scale-95', 'opacity-0');
-            }, 10);
-            
-            // 为新添加的按钮绑定事件
-            const newViewButton = newItem.querySelector('.view-work');
-            newViewButton.addEventListener('click', () => {
-              const imgSrc = newViewButton.getAttribute('data-img');
-              const title = newViewButton.getAttribute('data-title');
-              const desc = newViewButton.getAttribute('data-desc');
-              
-              modalImage.src = imgSrc;
-              modalImage.alt = title;
-              modalTitle.textContent = title;
-              modalDesc.textContent = desc;
-              
-              workModal.classList.remove('hidden');
-              document.body.style.overflow = 'hidden';
-            });
-            
-            const newDeleteButton = newItem.querySelector('.delete-work');
-            newDeleteButton.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const confirmDelete = confirm('确定要删除这个作品吗？');
-              if (confirmDelete) {
-                newItem.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                  newItem.remove();
-                }, 300);
-              }
-            });
-          };
-          
-          reader.readAsDataURL(file);
-        });
-        
-        // 隐藏加载状态
-        loading.classList.add('hidden');
-        // 重置文件输入，允许重复上传同一文件
-        fileInput.value = '';
-      }, 800);
-    }
-    
     // 表单提交处理
     const contactForm = document.getElementById('contact-form');
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      
+      // 获取表单数据
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+      
+      // 简单验证
+      if (!name.trim() || !email.trim() || !message.trim()) {
+        alert('请填写所有必填字段');
+        return;
+      }
       
       // 显示加载状态
       const loading = document.getElementById('loading');
@@ -1042,8 +1129,11 @@
       }, 1500);
     });
     
-    // 页面加载完成后的动画
+    // 页面加载完成后初始化
     document.addEventListener('DOMContentLoaded', () => {
+      // 初始化作品集管理器
+      PortfolioManager.init();
+      
       // 隐藏加载状态
       setTimeout(() => {
         const loading = document.getElementById('loading');
